@@ -10,19 +10,33 @@ import (
 	"spicerack"
 )
 
-var fastcgi = flag.Bool("fcgi", false, "Run under FastCGI mode")
+var (
+	fastcgi                = flag.Bool("fcgi", false, "Run under FastCGI mode")
+	dbUser, dbPass, dbName string
+)
 
 func main() {
 	flag.Parse()
+	loadConfig()
 	gorest.RegisterService(new(DreamService))
 
 	if !*fastcgi {
+		fmt.Println("Running Locally")
 		http.Handle("/", gorest.Handle())
 		fmt.Println(http.ListenAndServe(":9000", nil))
 	} else {
+		fmt.Println("Running as FastCGI")
 		l, _ := net.Listen("tcp", ":9000")
 		fmt.Println(fcgi.Serve(l, gorest.Handle()))
 	}
+}
+
+func loadConfig() {
+	conf, _ := spicerack.GofigFromEnv("ME_CONF")
+	salty, _ := conf.Map("salty")
+	dbUser = salty["db_user"].(string)
+	dbName = salty["db_name"].(string)
+	dbPass = salty["db_pass"].(string)
 }
 
 type DreamService struct {
@@ -32,11 +46,7 @@ type DreamService struct {
 }
 
 func (serv DreamService) GetHistory(Name string) (h spicerack.History) {
-	db, err := spicerack.OpenDb("postgres", "_N3rd3ry", "dreams")
-	if err != nil {
-		serv.ResponseBuilder().SetResponseCode(500)
-		return
-	}
+	db := spicerack.Db(dbUser, dbPass, dbName)
 	defer db.Close()
 
 	f, err := db.GetFighter(Name)
