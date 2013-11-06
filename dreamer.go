@@ -13,6 +13,7 @@ import (
 var (
 	fastcgi                = flag.Bool("fcgi", false, "Run under FastCGI mode")
 	dbUser, dbPass, dbName string
+	theShiznit             string
 )
 
 func main() {
@@ -37,12 +38,14 @@ func loadConfig() {
 	dbUser = salty["db_user"].(string)
 	dbName = salty["db_name"].(string)
 	dbPass = salty["db_pass"].(string)
+	theShiznit = salty["the_shiznit"].(string)
 }
 
 type DreamService struct {
 	gorest.RestService `root:"/api" consumes:"application/json" produces:"application/json"`
 
-	getHistory gorest.EndPoint `method:"GET" path:"/h/{Name:string}" output:"spicerack.History"`
+	getHistory      gorest.EndPoint `method:"GET" path:"/h/{Name:string}" output:"spicerack.History"`
+	getCurrentFight gorest.EndPoint `method:"GET" path:"/f" output:"[]spicerack.History"`
 }
 
 func (serv DreamService) GetHistory(Name string) (h spicerack.History) {
@@ -56,6 +59,24 @@ func (serv DreamService) GetHistory(Name string) (h spicerack.History) {
 	}
 
 	h = *db.GetHistory(f)
+	serv.ResponseBuilder().SetResponseCode(200)
+	return
+}
+
+func (serv DreamService) GetCurrentFight() (card []spicerack.History) {
+	db := spicerack.Db(dbUser, dbPass, dbName)
+	defer db.Close()
+	fc, err := spicerack.GetSecretData(theShiznit)
+	if err != nil {
+		serv.ResponseBuilder().SetResponseCode(500)
+		return
+	}
+	card = make([]spicerack.History, 2)
+	red, _ := db.GetFighter(fc.RedName)
+	blue, _ := db.GetFighter(fc.BlueName)
+	card[0] = *db.GetHistory(red)
+	card[1] = *db.GetHistory(blue)
+
 	serv.ResponseBuilder().SetResponseCode(200)
 	return
 }
