@@ -3,6 +3,7 @@ package main
 import (
 	"code.google.com/p/gorest"
 	"flag"
+	"fmt"
 	"net"
 	"net/http"
 	"net/http/fcgi"
@@ -17,9 +18,9 @@ func main() {
 
 	if !*fastcgi {
 		http.Handle("/", gorest.Handle())
-		fmt.Println(http.ListenAndServe(":4380", nil))
+		fmt.Println(http.ListenAndServe(":9000", nil))
 	} else {
-		l, _ := net.Listen("tcp", ":4380")
+		l, _ := net.Listen("tcp", ":9000")
 		fmt.Println(fcgi.Serve(l, gorest.Handle()))
 	}
 }
