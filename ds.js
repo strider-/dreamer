@@ -9,8 +9,8 @@ DS.Web = {
 
     getFightCard: function(msg) {
         $.get("/api/f").done(function(data){
-            populateData($(".red"), data[0])
-            populateData($(".blue"), data[1])
+            DS.Web.populateData($(".red"), data[0])
+            DS.Web.populateData($(".blue"), data[1])
         });
     },
 
