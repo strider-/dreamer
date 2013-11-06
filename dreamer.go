@@ -40,7 +40,7 @@ func loadConfig() {
 }
 
 type DreamService struct {
-	gorest.RestService `root:"/" consumes:"application/json" produces:"application/json"`
+	gorest.RestService `root:"/api" consumes:"application/json" produces:"application/json"`
 
 	getHistory gorest.EndPoint `method:"GET" path:"/h/{Name:string}" output:"spicerack.History"`
 }
