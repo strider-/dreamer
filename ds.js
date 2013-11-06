@@ -21,14 +21,18 @@ DS.Web = {
         $tblW.empty();
         $tblL.empty();
 
-        $(data.Wins).each(function(index, item){
+        $(data.Wins).sort(DS.Web.eloSort).each(function(index, item){
             var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
             $tblW.append(row);
         });
-        $(data.Losses).each(function(index, item){
+        $(data.Losses).sort(DS.Web.eloSort)..each(function(index, item){
             var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
             $tblL.append(row);
         });        
+    },
+
+    eloSort: function(a, b) {
+        return a.Elo == b.Elo ? 0 : (a.Elo > b.Elo) ? 1 : -1;
     }
 };
 
