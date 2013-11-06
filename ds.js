@@ -17,12 +17,18 @@ DS.Web = {
     populateData: function($elm, data) {
         $elm.find("h1").text(data.Fighter.Name)
         var $tblW = $elm.find("table.wins tbody");
+        var $tblL = $elm.find("table.losses tbody")
         $tblW.empty();
+        $tblL.empty();
 
         $(data.Wins).each(function(index, item){
             var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
             $tblW.append(row);
         });
+        $(data.Losses).each(function(index, item){
+            var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
+            $tblL.append(row);
+        });        
     }
 };
 
