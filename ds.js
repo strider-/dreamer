@@ -30,7 +30,7 @@ DS.Web = {
     appendRow: function($tbl, index, item) {
         var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
         $tbl.append(row);        
-    }
+    },
 
     eloSort: function(a, b) {
         return a.Elo == b.Elo ? 0 : (a.Elo > b.Elo) ? -1 : 1;
