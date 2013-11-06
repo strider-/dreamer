@@ -14,7 +14,7 @@ DS.Web = {
         });
     },
 
-    populateData($elm, data) {
+    populateData: function($elm, data) {
         $elm.find("h1").text(data.Fighter.Name)
         var $tblW = $elm.find("table.wins tbody");
         $(data.Wins).each(function(index, item){
