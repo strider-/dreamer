@@ -32,7 +32,7 @@ DS.Web = {
     },
 
     eloSort: function(a, b) {
-        return a.Elo == b.Elo ? 0 : (a.Elo > b.Elo) ? 1 : -1;
+        return a.Elo == b.Elo ? 0 : (a.Elo > b.Elo) ? -1 : 1;
     }
 };
 
