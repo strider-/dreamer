@@ -9,7 +9,7 @@ DS.Web = {
 
     getFightCard: function(msg) {
         $.get("/api/f").done(function(data){
-            $("body").text(data);
+            $("body").text(JSON.stringify(data));
         });
     }
 };
