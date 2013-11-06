@@ -16,20 +16,21 @@ DS.Web = {
 
     populateData: function($elm, data) {
         $elm.find("h1").text(data.Fighter.Name)
-        var $tblW = $elm.find("table.wins tbody");
-        var $tblL = $elm.find("table.losses tbody")
-        $tblW.empty();
-        $tblL.empty();
+        var $tblW = $elm.find("table.wins tbody").empty();
+        var $tblL = $elm.find("table.losses tbody").empty();
 
         $(data.Wins).sort(DS.Web.eloSort).each(function(index, item){
-            var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
-            $tblW.append(row);
+            DS.Web.appendRow($tblW, index, item)
         });
         $(data.Losses).sort(DS.Web.eloSort).each(function(index, item){
-            var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
-            $tblL.append(row);
+            DS.Web.appendRow($tblL, index, item)
         });        
     },
+
+    appendRow: function($tbl, index, item) {
+        var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
+        $tbl.append(row);        
+    }
 
     eloSort: function(a, b) {
         return a.Elo == b.Elo ? 0 : (a.Elo > b.Elo) ? -1 : 1;
