@@ -15,9 +15,16 @@ DS.Web = {
     },
 
     populateData: function($elm, data) {
-        $elm.find("h1").text(data.Fighter.Name)
+        data.Wins = data.Wins || []
+        data.Losses = data.Losses || []
+
+        $elm.find(".name").text(data.Fighter.Name)
+        $elm.find(".label").text(data.Fighter.Elo)
         var $tblW = $elm.find("table.wins tbody").empty();
-        var $tblL = $elm.find("table.losses tbody").empty();
+        var $tblL = $elm.find("table.losses tbody").empty();        
+
+        $($tblW.closest('.fights').find('thead th')[0]).text(data.Wins.length + ' Wins')
+        $($tblL.closest('.fights').find('thead th')[1]).text(data.Losses.length + ' Losses')
 
         $(data.Wins).sort(DS.Web.eloSort).each(function(index, item){
             DS.Web.appendRow($tblW, index, item)

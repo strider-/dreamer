@@ -1,5 +1,11 @@
 package main
 
+/*
+   JSON API service that returns the detailed win/loss records for the current fight card.
+   Acts either as a FastCGI listener (reverse proxy for Nginx or Apache), or a local webserver.
+   TODO: Maybe make the port a parameter?
+*/
+
 import (
 	"code.google.com/p/gorest"
 	"flag"
@@ -23,6 +29,8 @@ func main() {
 
 	if !*fastcgi {
 		fmt.Println("Running Locally")
+		http.HandleFunc("/index", homePage)
+		http.HandleFunc("/ds.js", homePage)
 		http.Handle("/", gorest.Handle())
 		fmt.Println(http.ListenAndServe(":9000", nil))
 	} else {
@@ -30,6 +38,14 @@ func main() {
 		l, _ := net.Listen("tcp", ":9000")
 		fmt.Println(fcgi.Serve(l, gorest.Handle()))
 	}
+}
+
+func homePage(w http.ResponseWriter, r *http.Request) {
+	file := r.URL.Path[1:]
+	if file == "index" {
+		file += ".html"
+	}
+	http.ServeFile(w, r, file)
 }
 
 func loadConfig() {
