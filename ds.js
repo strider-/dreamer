@@ -12,8 +12,8 @@ DS.Web = {
             var $red = $(".red")
             var $blue = $(".blue")
 
-            red.find("h1").text(data[0].Fighter.Name)
-            blue.find("h1").text(data[1].Fighter.Name)
+            $red.find("h1").text(data[0].Fighter.Name)
+            $blue.find("h1").text(data[1].Fighter.Name)
         });
     }
 };
