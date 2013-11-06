@@ -9,11 +9,17 @@ DS.Web = {
 
     getFightCard: function(msg) {
         $.get("/api/f").done(function(data){
-            var $red = $(".red")
-            var $blue = $(".blue")
+            populateData($(".red"), data[0])
+            populateData($(".blue"), data[1])
+        });
+    },
 
-            $red.find("h1").text(data[0].Fighter.Name)
-            $blue.find("h1").text(data[1].Fighter.Name)
+    populateData($elm, data) {
+        $elm.find("h1").text(data.Fighter.Name)
+        var $tblW = $elm.find("table.wins tbody");
+        $(data.Wins).each(function(index, item){
+            var row = '<tr><td>' + item.Opponent + '</td></tr>';
+            $tblW.append(row);
         });
     }
 };
