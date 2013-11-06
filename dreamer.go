@@ -17,10 +17,10 @@ func main() {
 
 	if !*fastcgi {
 		http.Handle("/", gorest.Handle())
-		http.ListenAndServe(":4380", nil)
+		fmt.Println(http.ListenAndServe(":4380", nil))
 	} else {
 		l, _ := net.Listen("tcp", ":4380")
-		fcgi.Serve(l, gorest.Handle())
+		fmt.Println(fcgi.Serve(l, gorest.Handle()))
 	}
 }
 
