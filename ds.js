@@ -9,7 +9,11 @@ DS.Web = {
 
     getFightCard: function(msg) {
         $.get("/api/f").done(function(data){
-            $("body").text(JSON.stringify(data));
+            var $red = $(".red")
+            var $blue = $(".blue")
+
+            red.find("h1").text(data[0].Fighter.Name)
+            blue.find("h1").text(data[1].Fighter.Name)
         });
     }
 };
