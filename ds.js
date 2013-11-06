@@ -18,9 +18,9 @@ DS.Web = {
         $elm.find("h1").text(data.Fighter.Name)
         var $tblW = $elm.find("table.wins tbody");
         $tblW.empty();
-        
+
         $(data.Wins).each(function(index, item){
-            var row = '<tr><td>' + item.Opponent + '</td></tr>';
+            var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
             $tblW.append(row);
         });
     }
