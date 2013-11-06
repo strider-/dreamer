@@ -25,7 +25,7 @@ DS.Web = {
             var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
             $tblW.append(row);
         });
-        $(data.Losses).sort(DS.Web.eloSort)..each(function(index, item){
+        $(data.Losses).sort(DS.Web.eloSort).each(function(index, item){
             var row = '<tr><td>' + item.Elo + '</td><td>' + item.Opponent + '</td></tr>';
             $tblL.append(row);
         });        
