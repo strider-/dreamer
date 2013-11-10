@@ -20,7 +20,7 @@ DS.Web = {
             return $.map(a, function (e, i){
                 return e.Opponent;
             });
-        }
+        };
         var ro = mapFunc(data, 0);
         var bo = mapFunc(data, 1);
 
@@ -42,13 +42,14 @@ DS.Web = {
 
         $($tblW.closest('.fights').find('thead th')[0]).text(data.Wins.length + ' Wins');
         $($tblL.closest('.fights').find('thead th')[1]).text(data.Losses.length + ' Losses');
+        var appendFunc = function(a, $t) {
+            $(a).sort(DS.Web.eloSort).each(function(index, item){
+                DS.Web.appendRow($t, index, item, common);
+            });
+        };
 
-        $(data.Wins).sort(DS.Web.eloSort).each(function(index, item){
-            DS.Web.appendRow($tblW, index, item, common);
-        });
-        $(data.Losses).sort(DS.Web.eloSort).each(function(index, item){
-            DS.Web.appendRow($tblL, index, item, common);
-        });        
+        appendFunc(data.Wins, $tblW);
+        appendFunc(data.Losses, $tblL);
     },
 
     appendRow: function($tbl, index, item, common) {
