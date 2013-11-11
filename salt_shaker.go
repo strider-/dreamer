@@ -448,14 +448,12 @@ func notify(message string) {
 
 // ...and along comes sexy Mrs. Dash
 func sprinkleMrsDash(data *spicerack.FightCard) {
-	if len(data.MrsDash) > 0 {
-		for _, x := range strings.Split(data.MrsDash, "|") {
-			switch x {
-			case "thats_my_boy":
-				client.Privmsg(settings.Channel, rainbowText("ALL IN ON MR. BONEGOLEM'S WILD RIDE"))
-			case "fake_astro":
-				client.Privmsg(settings.Channel, rainbowText("FAKE ASTRO, DON'T BET"))
-			}
+	for _, x := range data.MrsDash {
+		switch x {
+		case "thats_my_boy":
+			client.Privmsg(settings.Channel, rainbowText("ALL IN ON MR. BONEGOLEM'S WILD RIDE"))
+		case "fake_astro":
+			client.Privmsg(settings.Channel, rainbowText("FAKE ASTRO, DON'T BET"))
 		}
 	}
 }
