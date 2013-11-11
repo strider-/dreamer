@@ -43,6 +43,7 @@ const (
 	SOLO_FORMAT          string = "%s [%s] | %s"
 	HT_FORMAT            string = "http://fightmoney.herokuapp.com/stats/#/%s/%s"
 	TINYURL_FORMAT       string = "http://tinyurl.com/api-create.php?%s"
+	WL_MESSAGE           string = "%s [user: %s | pass: %s]"
 
 	UPSET_FACTOR float64 = 2.0
 )
@@ -53,6 +54,7 @@ type Settings struct {
 	BotEmail                    string
 	TheShiznit                  string
 	Websocket                   string
+	WlAddr, WlUser, WlPass      string
 	Pushover                    map[string]interface{}
 }
 
@@ -106,6 +108,7 @@ func main() {
 	client.HandleCommand(irc.CMD_PRIVMSG, manualFightCard)
 	client.HandleCommand(irc.CMD_PRIVMSG, getSpecificFighters)
 	client.HandleCommand(irc.CMD_PRIVMSG, getRetiredFighters)
+	client.HandleCommand(irc.CMD_PRIVMSG, showWLInfo)
 	client.HandleCommand(irc.CMD_PRIVMSG, nickServ)
 
 	// connect to IRC & wait indefinitely, and listen for HTTP posts
@@ -158,6 +161,14 @@ func registerAndJoin(m *irc.Message) {
 
 	log("Starting websocket loop.")
 	go pollSalty()
+}
+
+// handles `wl command to announce detailed win/loss page w/ user&pass.
+func showWLInfo(m *irc.Message) {
+	if m.IsChannelMsg() && m.Parameters[0] == settings.Channel && m.Trail == "`wl" {
+		msg := fmt.Sprintf(WL_MESSAGE, settings.WlAddr, settings.WlUser, settings.WlPass)
+		client.Privmsg(settings.Channel, msg)
+	}
 }
 
 // handles `s commands to get the current fight card
