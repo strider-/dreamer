@@ -3,6 +3,7 @@ package main
 /*
 	IRC bot; reports current fight card w/ stats & hightower link in irc channel
 	Commands:
+		`wl			 - Reports the page & credentials of detailed win/loss page for current fight card
 		`s 		     - Reports the current fight card
 		`s  p1 (,p2) - Reports a specific fight card for p1 and/or p2
 		`sr p1 (,p2) - Reports a specific fight card for p1 and/or p2 for retired fighters
