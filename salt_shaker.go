@@ -280,6 +280,7 @@ func announceFightCard(data *spicerack.FightCard, opts *Options) {
 
 	diff := time.Now().Sub(lastAnnounce)
 	if diff.Seconds() >= 3 {
+		lastAnnounce = time.Now()
 		db := spicerack.Db(settings.DbUser, settings.DbPass, settings.DbName)
 		var red, blue *spicerack.Fighter
 		var e error
@@ -326,7 +327,6 @@ func announceFightCard(data *spicerack.FightCard, opts *Options) {
 		} else {
 			log("%v", e)
 		}
-		lastAnnounce = time.Now()
 	}
 }
 
