@@ -44,7 +44,7 @@ const (
 	VS_FORMAT            string = "%s [%s] \x02vs\x02 %s [%s] | %s"
 	SOLO_FORMAT          string = "%s [%s] | %s"
 	HT_FORMAT            string = "http://fightmoney.herokuapp.com/stats/#/%s/%s"
-	TINYURL_FORMAT       string = "http://tinyurl.com/api-create.php?%s"
+	GOOGL_FORMAT         string = "https://www.googleapis.com/urlshortener/v1/url?key=%s"
 	WL_MESSAGE           string = "%s [user: %s | pass: %s]"
 
 	UPSET_FACTOR float64 = 2.0
@@ -382,7 +382,7 @@ func formatFighterStats(f *spicerack.Fighter) string {
 
 // generates a shortened url link to hightower for the given fighters
 func getHightowerUrl(left, right string) string {
-	apiUrl := fmt.Sprintf("https://www.googleapis.com/urlshortener/v1/url?key=%s", settings.GoogleApiKey)
+	apiUrl := fmt.Sprintf(GOOGL_FORMAT, settings.GoogleApiKey)
 	payload, _ := json.Marshal(&map[string]string{"longUrl": fmt.Sprintf(HT_FORMAT, escapeName(left), escapeName(right))})
 	result := &map[string]string{}
 
