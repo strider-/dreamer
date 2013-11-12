@@ -3,7 +3,9 @@ package main
 /*
    JSON API service that returns the detailed win/loss records for the current fight card.
    Acts either as a FastCGI listener (reverse proxy for Nginx or Apache), or a local webserver.
-   TODO: Maybe make the port a parameter?
+   TODO:
+   		 -Maybe make the port a parameter?
+	 	 -Create an Upstart conf instead of using nohup & detatching from the terminal
 */
 
 import (

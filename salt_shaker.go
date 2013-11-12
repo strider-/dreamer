@@ -14,6 +14,7 @@ package main
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"github.com/oguzbilgic/socketio"
 	"io/ioutil"
@@ -56,6 +57,7 @@ type Settings struct {
 	TheShiznit                  string
 	Websocket                   string
 	WlAddr, WlUser, WlPass      string
+	GoogleApiKey                string
 	Pushover                    map[string]interface{}
 }
 
@@ -378,22 +380,29 @@ func formatFighterStats(f *spicerack.Fighter) string {
 	return UNKNOWN_FIGHTER
 }
 
-// generates a tinyurl link to hightower for the given fighters
+// generates a shortened url link to hightower for the given fighters
 func getHightowerUrl(left, right string) string {
-	link := fmt.Sprintf(HT_FORMAT, escapeName(left), escapeName(right))
+	apiUrl := fmt.Sprintf("https://www.googleapis.com/urlshortener/v1/url?key=%s", settings.GoogleApiKey)
+	payload, _ := json.Marshal(&map[string]string{"longUrl": fmt.Sprintf(HT_FORMAT, escapeName(left), escapeName(right))})
+	result := &map[string]string{}
 
-	v := url.Values{}
-	v.Set("url", link)
+	req, _ := http.NewRequest("POST", apiUrl, bytes.NewBuffer(payload))
+	req.Header.Add("Content-Type", "application/json")
 
-	turl := fmt.Sprintf(TINYURL_FORMAT, v.Encode())
-	if resp, err := http.Get(turl); err == nil {
-		defer resp.Body.Close()
-		if body, err := ioutil.ReadAll(resp.Body); err == nil {
-			return string(body)
-		}
+	c := &http.Client{}
+	resp, err := c.Do(req)
+	if err != nil {
+		return "Error"
+	}
+	defer resp.Body.Close()
+
+	body, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "Error"
 	}
 
-	return "TinyURL sucks right now"
+	json.Unmarshal(body, result)
+	return (*result)["id"]
 }
 
 // escapes fighter names for hightower urls
