@@ -8,9 +8,10 @@ DS.Web = {
 
     getFightCard: function(msg) {
         $.get("/api/f").done(function(data){
-            var common = DS.Web.findCommonOpponents(data);
-            DS.Web.populateData($(".red"), data[0], common);
-            DS.Web.populateData($(".blue"), data[1], common);
+            var common = DS.Web.findCommonOpponents(data.History);
+            DS.Web.populateStats(data.Stats);
+            DS.Web.populateData($(".red"), data.History[0], common);
+            DS.Web.populateData($(".blue"), data.History[1], common);
         });
     },
 
@@ -31,12 +32,21 @@ DS.Web = {
         return result;
     },
 
+    populateStats: function(stats) {
+        $('.red .tier').text(stats.p1tier);
+        $('.red .life').text(stats.p1life);
+        $('.red .meter').text(stats.p1meter);
+        $('.blue .tier').text(stats.p2tier);
+        $('.blue .life').text(stats.p2life);
+        $('.blue .meter').text(stats.p2meter);        
+    },
+
     populateData: function($elm, data, common) {
         data.Wins = data.Wins || [];
         data.Losses = data.Losses || [];
 
         $elm.find(".name").text(data.Fighter.Name);
-        $elm.find(".label").text(data.Fighter.Elo);
+        $elm.find(".elo").text(data.Fighter.Elo);
         var $tblW = $elm.find("table.wins tbody").empty();
         var $tblL = $elm.find("table.losses tbody").empty();        
 

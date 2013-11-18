@@ -21,13 +21,21 @@ import (
 var (
 	fastcgi                = flag.Bool("fcgi", false, "Run under FastCGI mode")
 	dbUser, dbPass, dbName string
-	theShiznit             string
+	illumEmail, illumPass  string
+	theShiznit, statsUrl   string
+	webClient              *http.Client
 )
 
 func main() {
 	flag.Parse()
 	loadConfig()
 	gorest.RegisterService(new(DreamService))
+	var err error
+
+	webClient, err = spicerack.LogIntoSaltyBet(illumEmail, illumPass)
+	if err != nil {
+		fmt.Printf("Error logging into Salty Bet: %v\n", err)
+	}
 
 	if !*fastcgi {
 		fmt.Println("Running Locally")
@@ -56,14 +64,22 @@ func loadConfig() {
 	dbUser = salty["db_user"].(string)
 	dbName = salty["db_name"].(string)
 	dbPass = salty["db_pass"].(string)
+	illumEmail = salty["illum_email"].(string)
+	illumPass = salty["illum_pword"].(string)
 	theShiznit = salty["the_shiznit"].(string)
+	statsUrl = salty["ajax_stats"].(string)
 }
 
 type DreamService struct {
 	gorest.RestService `root:"/api" consumes:"application/json" produces:"application/json"`
 
 	getHistory      gorest.EndPoint `method:"GET" path:"/h/{Name:string}" output:"spicerack.History"`
-	getCurrentFight gorest.EndPoint `method:"GET" path:"/f" output:"[]spicerack.History"`
+	getCurrentFight gorest.EndPoint `method:"GET" path:"/f" output:"FightData"`
+}
+
+type FightData struct {
+	History []spicerack.History
+	Stats   spicerack.FighterStats
 }
 
 func (serv DreamService) GetHistory(Name string) (h spicerack.History) {
@@ -81,20 +97,30 @@ func (serv DreamService) GetHistory(Name string) (h spicerack.History) {
 	return
 }
 
-func (serv DreamService) GetCurrentFight() (card []spicerack.History) {
+func (serv DreamService) GetCurrentFight() FightData {
 	db := spicerack.Db(dbUser, dbPass, dbName)
 	defer db.Close()
 	fc, err := spicerack.GetSecretData(theShiznit)
 	if err != nil {
 		serv.ResponseBuilder().SetResponseCode(500)
-		return
+		return *new(FightData)
 	}
-	card = make([]spicerack.History, 2)
+	fs, err := spicerack.GetFighterStats(webClient, statsUrl)
+	if err != nil {
+		serv.ResponseBuilder().SetResponseCode(500)
+		return *new(FightData)
+	}
+
+	card := &FightData{
+		History: make([]spicerack.History, 2),
+		Stats:   *fs,
+	}
+
 	red, _ := db.GetFighter(fc.RedName)
 	blue, _ := db.GetFighter(fc.BlueName)
-	card[0] = *db.GetHistory(red)
-	card[1] = *db.GetHistory(blue)
+	card.History[0] = *db.GetHistory(red)
+	card.History[1] = *db.GetHistory(blue)
 
 	serv.ResponseBuilder().SetResponseCode(200)
-	return
+	return *card
 }
