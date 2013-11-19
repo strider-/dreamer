@@ -464,6 +464,8 @@ func sprinkleMrsDash(data *spicerack.FightCard) {
 			client.Privmsg(settings.Channel, rainbowText("ALL IN ON MR. BONEGOLEM'S WILD RIDE"))
 		case "fake_astro":
 			client.Privmsg(settings.Channel, rainbowText("FAKE ASTRO, DON'T BET"))
+		case "the_gawd":
+			client.Privmsg(settings.Channel, rainbowText("RESPEK THE GAWD, SON"))
 		}
 	}
 }
