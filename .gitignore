@@ -1,3 +1,4 @@
 .htpasswd
 dreamer.log
 dreamer
+*.sublime*

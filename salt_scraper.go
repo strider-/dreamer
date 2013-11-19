@@ -15,7 +15,6 @@ import (
 	"html"
 	"io/ioutil"
 	"net/http"
-	"net/http/cookiejar"
 	"net/url"
 	"os"
 	"regexp"
@@ -61,21 +60,10 @@ func main() {
 	}
 	defer repo.Close()
 
-	// set the cookie jar for consecutive requests after logging in
-	jar, _ := cookiejar.New(nil)
-	client := &http.Client{Jar: jar}
-	fmt.Println("Logging into saltybet")
-	r, _ := client.PostForm(saltyUrl("authenticate?signin=1"), url.Values{
-		"email":        {settings.IllumEmail},
-		"pword":        {settings.IllumPword},
-		"authenticate": {"signin"},
-	})
-
-	// validate the login succeeded
-	page, _ := ioutil.ReadAll(r.Body)
-	r.Body.Close()
-	if !validLogin(page) {
-		fmt.Println("Saltybet credentials were invalid.\nQuitting.\n")
+	// log into saltybet
+	client, err := spicerack.LogIntoSaltyBet(settings.IllumEmail, settings.IllumPword)
+	if err != nil {
+		fmt.Printf("Error logging into saltybet: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -120,13 +108,6 @@ func main() {
 func saltyUrl(format string, args ...interface{}) string {
 	rel := fmt.Sprintf(format, args...)
 	return fmt.Sprintf("http://www.saltybet.com/%s", strings.TrimPrefix(rel, "/"))
-}
-
-// validates salty login attempt
-func validLogin(page []byte) bool {
-	doc, _ := gokogiri.ParseHtml(page)
-	errors, _ := doc.Search("//div[@class='ui-state-error']")
-	return len(errors) == 0
 }
 
 // checks to ensure we have data to scrape
