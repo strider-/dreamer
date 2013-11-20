@@ -12,6 +12,10 @@ DS.Web = {
             DS.Web.populateStats(data.Stats);
             DS.Web.populateData($(".red"), data.History[0], common);
             DS.Web.populateData($(".blue"), data.History[1], common);
+            if($.trim(data.Alert).length > 0) {
+                $('.msg').text(data.Alert);
+                $('.alert').removeClass('hidden');
+            }
         });
     },
 
