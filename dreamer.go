@@ -80,6 +80,7 @@ type DreamService struct {
 type FightData struct {
 	History []spicerack.History
 	Stats   spicerack.FighterStats
+	Alert   string
 }
 
 func (serv DreamService) GetHistory(Name string) (h spicerack.History) {
@@ -120,6 +121,7 @@ func (serv DreamService) GetCurrentFight() FightData {
 	blue, _ := db.GetFighter(fc.BlueName)
 	card.History[0] = *db.GetHistory(red)
 	card.History[1] = *db.GetHistory(blue)
+	card.Alert = fc.Alert
 
 	serv.ResponseBuilder().SetResponseCode(200)
 	return *card
