@@ -242,6 +242,7 @@ func pollSalty() {
 		}
 
 		var lastStatus string = ""
+		//var lastAlert string = ""
 		for {
 			_, err := socket.Receive()
 			if err != nil {
@@ -266,6 +267,10 @@ func pollSalty() {
 					}
 
 					lastStatus = data.Status
+				}
+
+				if data.Alert != "" {
+					client.Privmsg(settings.Channel, fmt.Sprintf("Salty Alert: %s", data.Alert))
 				}
 			}
 		}
