@@ -16,7 +16,7 @@ DS.Web = {
             DS.Web.populateData($(".red"), data.History[0], common);
             DS.Web.populateData($(".blue"), data.History[1], common);
             $('.msg').text(msg);
-            $('.alert').toggleClass('hidden', state);
+            $('.salty-alert').toggleClass('hidden', state);
         });
     },
 
