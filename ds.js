@@ -80,6 +80,6 @@ DS.Web = {
     }
 };
 
-$(document).ready(function(){
+$(function(){
     DS.Web.init();
 });

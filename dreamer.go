@@ -15,6 +15,7 @@ import (
 	"net"
 	"net/http"
 	"net/http/fcgi"
+	"sort"
 	"spicerack"
 )
 
@@ -40,7 +41,10 @@ func main() {
 	if !*fastcgi {
 		fmt.Println("Running Locally")
 		http.HandleFunc("/index", homePage)
+		http.HandleFunc("/search", homePage)
 		http.HandleFunc("/ds.js", homePage)
+		http.HandleFunc("/s.js", homePage)
+		http.HandleFunc("/ta.css", homePage)
 		http.Handle("/", gorest.Handle())
 		fmt.Println(http.ListenAndServe(":9000", nil))
 	} else {
@@ -52,7 +56,7 @@ func main() {
 
 func homePage(w http.ResponseWriter, r *http.Request) {
 	file := r.URL.Path[1:]
-	if file == "index" {
+	if file == "index" || file == "search" {
 		file += ".html"
 	}
 	http.ServeFile(w, r, file)
@@ -73,7 +77,8 @@ func loadConfig() {
 type DreamService struct {
 	gorest.RestService `root:"/api" consumes:"application/json" produces:"application/json"`
 
-	getHistory      gorest.EndPoint `method:"GET" path:"/h/{Name:string}" output:"spicerack.History"`
+	getFighters     gorest.EndPoint `method:"GET" path:"/a" output:"[]FighterInfo"`
+	getHistory      gorest.EndPoint `method:"GET" path:"/h/{CharId:int}" output:"spicerack.History"`
 	getCurrentFight gorest.EndPoint `method:"GET" path:"/f" output:"FightData"`
 }
 
@@ -83,11 +88,41 @@ type FightData struct {
 	Alert   string
 }
 
-func (serv DreamService) GetHistory(Name string) (h spicerack.History) {
+type FighterInfo struct {
+	Cid  int
+	Name string
+}
+
+type ByName []FighterInfo
+
+func (f ByName) Len() int           { return len(f) }
+func (f ByName) Swap(i, j int)      { f[i], f[j] = f[j], f[i] }
+func (f ByName) Less(i, j int) bool { return f[i].Name < f[j].Name }
+
+func (serv DreamService) GetFighters() (fighters []FighterInfo) {
 	db := spicerack.Db(dbUser, dbPass, dbName)
 	defer db.Close()
 
-	f, err := db.GetFighter(Name)
+	names, err := db.GetFighterNames()
+	fighters = make([]FighterInfo, 0, len(names))
+	if err != nil {
+		serv.ResponseBuilder().SetResponseCode(500)
+	} else {
+		serv.ResponseBuilder().SetResponseCode(200)
+		for k, v := range names {
+			fighters = append(fighters, FighterInfo{Cid: k, Name: v})
+		}
+		sort.Sort(ByName(fighters))
+	}
+
+	return
+}
+
+func (serv DreamService) GetHistory(CharId int) (h spicerack.History) {
+	db := spicerack.Db(dbUser, dbPass, dbName)
+	defer db.Close()
+
+	f, err := db.GetFighter(CharId)
 	if err != nil || f.Id == 0 {
 		serv.ResponseBuilder().SetResponseCode(404)
 		return
