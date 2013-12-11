@@ -6,7 +6,6 @@ package main
 		`wl			 - Reports the page & credentials of detailed win/loss page for current fight card
 		`s 		     - Reports the current fight card
 		`s  p1 (,p2) - Reports a specific fight card for p1 and/or p2
-		`sr p1 (,p2) - Reports a specific fight card for p1 and/or p2 for retired fighters
 		`r			 - [Admin] Registers the bot with NickServ
 		`c [token]	 - [Admin] Sends a registration confirmation token to NickServ
 	TODO:
@@ -62,8 +61,7 @@ type Settings struct {
 }
 
 type Options struct {
-	LooseSearch   bool
-	RetiredSearch bool
+	LooseSearch bool
 }
 
 var (
@@ -110,7 +108,6 @@ func main() {
 	client.HandleCommand(irc.RPL_WELCOME, registerAndJoin)
 	client.HandleCommand(irc.CMD_PRIVMSG, manualFightCard)
 	client.HandleCommand(irc.CMD_PRIVMSG, getSpecificFighters)
-	client.HandleCommand(irc.CMD_PRIVMSG, getRetiredFighters)
 	client.HandleCommand(irc.CMD_PRIVMSG, showWLInfo)
 	client.HandleCommand(irc.CMD_PRIVMSG, nickServ)
 
@@ -188,15 +185,6 @@ func getSpecificFighters(m *irc.Message) {
 	if m.IsChannelMsg() && m.Parameters[0] == settings.Channel && strings.HasPrefix(m.Trail, "`s ") {
 		data := createFightCard(m.Trail[3:])
 		opts := &Options{LooseSearch: true}
-		announceFightCard(data, opts)
-	}
-}
-
-// handles `sr p1 [, p2]
-func getRetiredFighters(m *irc.Message) {
-	if m.IsChannelMsg() && m.Parameters[0] == settings.Channel && strings.HasPrefix(m.Trail, "`sr ") {
-		data := createFightCard(m.Trail[4:])
-		opts := &Options{RetiredSearch: true}
 		announceFightCard(data, opts)
 	}
 }
@@ -293,8 +281,6 @@ func announceFightCard(data *spicerack.FightCard, opts *Options) {
 
 		if opts != nil && opts.LooseSearch {
 			red, blue, e = db.SearchFighters(data.RedName, data.BlueName)
-		} else if opts != nil && opts.RetiredSearch {
-			red, blue, e = db.SearchRetiredFighters(data.RedName, data.BlueName)
 		} else {
 			red, blue, e = db.GetFighters(data.RedName, data.BlueName)
 		}
