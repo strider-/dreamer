@@ -98,7 +98,7 @@ func main() {
 			}
 			fmt.Println()
 		}
-		relayToBot(fmt.Sprintf("Nightly scrape complete, bot information is up to date."))
+		relayToBot(fmt.Sprintf("Scheduled scrape complete, bot information is up to date."))
 	} else {
 		fmt.Printf("Failed to grab tournament IDs: %v\n", err)
 	}
