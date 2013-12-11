@@ -120,27 +120,25 @@ func illuminatiCheck(rows []xml.Node) (err error) {
 
 // runs through the tier pages, adding/updating characters accordingly
 func getRoster(c *http.Client) error {
-	// 1=S-Tier 2=A-Tier 3=B-Tier 4=Potato
-	for i := 1; i <= 4; i++ {
-		fmt.Printf("- Scraping Tier %d\n", i)
-		doc, err := getGokogiriDoc(c, saltyUrl("compendium?tier=%d", i))
-		if err != nil {
-			return err
-		}
-		rows, _ := doc.Search("//ul[@id='tierlist']/li/a")
-		for _, r := range rows {
-			cid, _ := strconv.Atoi(numRx.FindAllString(r.Attribute("href").String(), 2)[1])
-			name := html.UnescapeString(r.FirstChild().String())
-			fighter, _ := repo.GetFighter(cid)
+	// 0=New 1=S-Tier 2=A-Tier 3=B-Tier 4=Potato
+	fmt.Printf("- Scraping Compendium\n")
+	doc, err := getGokogiriDoc(c, saltyUrl("compendium?search="))
+	if err != nil {
+		return err
+	}
+	rows, _ := doc.Search("//ul[@id='tierlist']/li/a")
+	for _, r := range rows {
+		nums := numRx.FindAllString(r.Attribute("href").String(), 2)
+		tier, _ := strconv.Atoi(nums[0])
+		cid, _ := strconv.Atoi(nums[1])
+		name := html.UnescapeString(r.FirstChild().String())
+		fighter, _ := repo.GetFighter(name)
 
-			if !fighter.InDb() {
-				fighter.CharacterId = cid
-			}
-			fighter.Name = name
-			fighter.Tier = i
-			if err := repo.UpdateFighter(fighter); err != nil {
-				fmt.Printf("Failed to update fighter #%d - '%s': %v\n", cid, name, err)
-			}
+		fighter.CharacterId = cid
+		fighter.Name = name
+		fighter.Tier = tier
+		if err := repo.UpdateFighter(fighter); err != nil {
+			fmt.Printf("Failed to update fighter #%d - '%s': %v\n", cid, name, err)
 		}
 	}
 	return nil
