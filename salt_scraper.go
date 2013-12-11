@@ -120,7 +120,6 @@ func illuminatiCheck(rows []xml.Node) (err error) {
 
 // runs through the tier pages, adding/updating characters accordingly
 func getRoster(c *http.Client) error {
-	// 0=New 1=S-Tier 2=A-Tier 3=B-Tier 4=Potato
 	fmt.Printf("- Scraping Compendium\n")
 	doc, err := getGokogiriDoc(c, saltyUrl("compendium?search="))
 	if err != nil {
@@ -148,12 +147,8 @@ func getRoster(c *http.Client) error {
 // Rough estimate on first matchmaking fight: Snake Eyes vs Namor; tournament #101, match #51966
 func getAllTournamentIds() ([]int, error) {
 	return []int{
-		/*46, 50, 52, 54, 55, 56, 59, 63, 65, 67, */
-		68, 70, 72, 73, 74, 75, 76, 77, 78,
-		79, 80, 81, 82, 83, 84, 85, 86, 87,
-		88, 89, 90, 91, 92, 93, 94, 95, 96,
-		97, 98, 99, 100, 101, 102, 103, 104,
-		105, 106, 107, 108, 109}, nil
+		101, 102, 103, 104, 105,
+		106, 107, 108, 109}, nil
 }
 
 // Returns an array of the ids of the last n tournaments.
@@ -297,6 +292,8 @@ func GetParsedMatch(n xml.Node) (pm *ParsedMatch, err error) {
 		err = errors.New("Red or Blue fighter is an empty string.")
 	} else if int(pm.FightWinner) == 0 {
 		err = errors.New("No winner found.")
+	} else if pm.MatchId < 51966 {
+		err = errors.New("Pre-matchmaking fight. Ignored.")
 	}
 
 	return pm, err
