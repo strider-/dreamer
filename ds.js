@@ -9,9 +9,14 @@ DS.Web = {
     getFightCard: function(msg) {
         $.get("/api/f").done(function(data){
             var common = DS.Web.findCommonOpponents(data.History);
+            var msg = data.Alert;
+            var state = $.trim(msg).length === 0;
+
             DS.Web.populateStats(data.Stats);
             DS.Web.populateData($(".red"), data.History[0], common);
             DS.Web.populateData($(".blue"), data.History[1], common);
+            $('.msg').text(msg);
+            $('.salty-alert').toggleClass('hidden', state);
         });
     },
 
@@ -75,6 +80,6 @@ DS.Web = {
     }
 };
 
-$(document).ready(function(){
+$(function(){
     DS.Web.init();
 });

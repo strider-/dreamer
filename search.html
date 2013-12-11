@@ -3,27 +3,20 @@
         <title>DreamShaker</title>
         <meta name="robots" content="noindex, nofollow">
         <link rel="stylesheet" href="//netdna.bootstrapcdn.com/bootstrap/3.0.1/css/bootstrap.min.css">
-        <style>
-        .ribbon-banner {
-           display: block; position: absolute;
-           top: 28px; right: -120px; width: 350px; height: 50px; line-height: 50px; text-align: center; opacity: 0.7;
-           -webkit-transform: rotate(45deg); -moz-transform: rotate(45deg); -ms-transform: rotate(45deg); transform: rotate(45deg);
-           font-size: 24px; font-weight: 700; color: white; background-color: #eee; border: 1px solid white; z-index: 500; 
-        }
-        </style>
+        <link rel="stylesheet" href="ta.css">
     </head>
     <body>
-        <div class="ribbon-banner"><a href="search" target="_blank">Search!</a></div>
         <div class="container">
             <div class="row">
                 <div class="hidden salty-alert alert alert-danger">
                     <h3 class="msg text-center"></h3>
                 </div>
                 <div class="col-lg-6 red">
-                    <h1><span class="elo label label-default pull-left"></span>&nbsp;<span class="name"></span></h1>
-                    <span class="tier label label-warning pull-left"></span>
-                    <span class="life label label-success pull-left"></span>
-                    <span class="meter label label-info pull-left"></span>
+                    <h1><input class="name" placeholder="Red" type="text" data-cid=""></input></h1>
+                    <h4>
+                        <span class="tier label label-warning pull-left"></span>
+                        <span class="elo label label-default pull-left"></span>
+                    </h4>
                     <table class="table table-condensed fights">
                         <thead>
                             <tr>
@@ -50,10 +43,11 @@
                     </table>
                 </div>
                 <div class="col-lg-6 blue">
-                    <h1><span class="elo label label-default pull-left"></span>&nbsp;<span class="name"></span></h1>
-                    <span class="tier label label-warning pull-left"></span>
-                    <span class="life label label-success pull-left"></span>
-                    <span class="meter label label-info pull-left"></span>                    
+                    <h1><input class="name" placeholder="Blue" type="text" data-cid=""></input></h1>
+                    <h4>
+                        <span class="tier label label-warning pull-left"></span>
+                        <span class="elo label label-default pull-left"></span>
+                    </h4>
                     <table class="table table-condensed fights">
                         <thead>
                             <tr>
@@ -83,9 +77,9 @@
         </div>
         <div>
             <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8/jquery.min.js"></script>
-            <script src="//www-cdn-twitch.saltybet.com:8000/socket.io/socket.io.js"></script>
             <script src="//netdna.bootstrapcdn.com/bootstrap/3.0.1/js/bootstrap.min.js"></script>
-            <script src="ds.js"></script>
+            <script src="//cdnjs.cloudflare.com/ajax/libs/typeahead.js/0.9.3/typeahead.min.js"></script>
+            <script src="s.js"></script>
         </div>
     </body>
 </html>
