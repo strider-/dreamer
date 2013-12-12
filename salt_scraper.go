@@ -130,8 +130,7 @@ func getRoster(c *http.Client) error {
 		nums := numRx.FindAllString(r.Attribute("href").String(), 2)
 		tier, _ := strconv.Atoi(nums[0])
 		cid, _ := strconv.Atoi(nums[1])
-		name := html.UnescapeString(r.FirstChild().String())
-		nameSub(name)
+		name := nameSub(html.UnescapeString(r.FirstChild().String()))
 
 		fighter, _ := repo.GetFighter(name)
 
