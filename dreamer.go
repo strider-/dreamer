@@ -40,11 +40,10 @@ func main() {
 
 	if !*fastcgi {
 		fmt.Println("Running Locally")
-		http.HandleFunc("/index", homePage)
-		http.HandleFunc("/search", homePage)
-		http.HandleFunc("/ds.js", homePage)
-		http.HandleFunc("/s.js", homePage)
-		http.HandleFunc("/ta.css", homePage)
+		static := []string{"index", "search", "ds.js", "s.js", "ta.css"}
+		for _, p := range static {
+			http.HandleFunc(fmt.Sprintf("/%s", p), staticPage)
+		}
 		http.Handle("/", gorest.Handle())
 		fmt.Println(http.ListenAndServe(":9000", nil))
 	} else {
@@ -54,7 +53,7 @@ func main() {
 	}
 }
 
-func homePage(w http.ResponseWriter, r *http.Request) {
+func staticPage(w http.ResponseWriter, r *http.Request) {
 	file := r.URL.Path[1:]
 	if file == "index" || file == "search" {
 		file += ".html"

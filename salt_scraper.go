@@ -131,6 +131,8 @@ func getRoster(c *http.Client) error {
 		tier, _ := strconv.Atoi(nums[0])
 		cid, _ := strconv.Atoi(nums[1])
 		name := html.UnescapeString(r.FirstChild().String())
+		nameSub(name)
+
 		fighter, _ := repo.GetFighter(name)
 
 		fighter.CharacterId = cid
@@ -274,8 +276,8 @@ func GetParsedMatch(n xml.Node) (pm *ParsedMatch, err error) {
 		pm.BlueBets, _ = strconv.Atoi(numRx.FindString(bluevalue[0].String()))
 	}
 
-	pm.Red = html.UnescapeString(red[0].String())
-	pm.Blue = html.UnescapeString(blue[0].String())
+	pm.Red = nameSub(html.UnescapeString(red[0].String()))
+	pm.Blue = nameSub(html.UnescapeString(blue[0].String()))
 	pm.Bettors, _ = strconv.Atoi(bettors[0].String())
 	if len(winner) > 0 {
 		pm.Winner = html.UnescapeString(winner[0].String())
@@ -297,6 +299,14 @@ func GetParsedMatch(n xml.Node) (pm *ParsedMatch, err error) {
 	}
 
 	return pm, err
+}
+
+func nameSub(name string) string {
+	// way to go salty, unescaped brackets in html HOW CAN YOU GO WRONG
+	if name == " ( 0)/2" {
+		return "<> ( 0)<>/2"
+	}
+	return name
 }
 
 // Sends messages to the shaker bot, if listening on this machine at port 4380
