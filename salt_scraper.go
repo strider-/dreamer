@@ -118,7 +118,7 @@ func illuminatiCheck(rows []xml.Node) (err error) {
 	return
 }
 
-// runs through the tier pages, adding/updating characters accordingly
+// grab all characters in the compendium & add/update them.
 func getRoster(c *http.Client) error {
 	fmt.Printf("- Scraping Compendium\n")
 	doc, err := getGokogiriDoc(c, saltyUrl("compendium?search="))
@@ -279,7 +279,7 @@ func GetParsedMatch(n xml.Node) (pm *ParsedMatch, err error) {
 	pm.Blue = nameSub(html.UnescapeString(blue[0].String()))
 	pm.Bettors, _ = strconv.Atoi(bettors[0].String())
 	if len(winner) > 0 {
-		pm.Winner = html.UnescapeString(winner[0].String())
+		pm.Winner = nameSub(html.UnescapeString(winner[0].String()))
 		if pm.Winner == pm.Red {
 			pm.FightWinner = spicerack.WINNER_RED
 		} else if pm.Winner == pm.Blue {
