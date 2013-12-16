@@ -45,6 +45,8 @@ const (
 	HT_FORMAT            string = "http://fightmoney.herokuapp.com/stats/#/%s/%s"
 	GOOGL_FORMAT         string = "https://www.googleapis.com/urlshortener/v1/url?key=%s"
 	WL_MESSAGE           string = "%s [user: %s | pass: %s]"
+	COUNT_MESSAGE_GOOD   string = "There are approx %d untiered fighters."
+	COUNT_MESSAGE_BAD    string = "Sorry, looks like I fucked up (#callstrider)"
 
 	UPSET_FACTOR float64 = 2.0
 )
@@ -109,6 +111,7 @@ func main() {
 	client.HandleCommand(irc.CMD_PRIVMSG, manualFightCard)
 	client.HandleCommand(irc.CMD_PRIVMSG, getSpecificFighters)
 	client.HandleCommand(irc.CMD_PRIVMSG, showWLInfo)
+	client.HandleCommand(irc.CMD_PRIVMSG, getUntieredCount)
 	client.HandleCommand(irc.CMD_PRIVMSG, nickServ)
 
 	// connect to IRC & wait indefinitely, and listen for HTTP posts
@@ -168,6 +171,19 @@ func showWLInfo(m *irc.Message) {
 	if m.IsChannelMsg() && m.Parameters[0] == settings.Channel && m.Trail == "`wl" {
 		msg := fmt.Sprintf(WL_MESSAGE, settings.WlAddr, settings.WlUser, settings.WlPass)
 		client.Privmsg(settings.Channel, msg)
+	}
+}
+
+func getUntieredCount(m *irc.Message) {
+	if m.IsChannelMsg() && m.Parameters[0] == settings.Channel && m.Trail == "`u" {
+		db := spicerack.Db(settings.DbUser, settings.DbPass, settings.DbName)
+		defer db.Close()
+
+		if count, err := db.GetUntieredCount(); err != nil {
+			client.Privmsg(settings.Channel, COUNT_MESSAGE_BAD)
+		} else {
+			client.Privmsg(settings.Channel, fmt.Sprintf(COUNT_MESSAGE_GOOD, count))
+		}
 	}
 }
 
