@@ -292,6 +292,7 @@ func announceFightCard(data *spicerack.FightCard, opts *Options) {
 	if diff.Seconds() >= 3 {
 		lastAnnounce = time.Now()
 		db := spicerack.Db(settings.DbUser, settings.DbPass, settings.DbName)
+		defer db.Close()
 		var red, blue *spicerack.Fighter
 		var e error
 
