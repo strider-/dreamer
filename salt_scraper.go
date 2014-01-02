@@ -39,10 +39,11 @@ type ParsedMatch struct {
 }
 
 var (
-	repo     *spicerack.Repository
-	numRx    *regexp.Regexp
-	resetElo = flag.Bool("reset-elo", false, "Recalcuates elo values")
-	eloBase  = flag.Int("elo-base", 300, "Provides a base elo value")
+	repo         *spicerack.Repository
+	numRx        *regexp.Regexp
+	resetElo     = flag.Bool("reset-elo", false, "Recalcuates elo values")
+	eloBase      = flag.Int("elo-base", 300, "Provides a base elo value")
+	saltTheEarth = flag.Bool("salt-the-earth", false, "Complete teardown and rebuild.")
 )
 
 func main() {
@@ -89,28 +90,35 @@ func main() {
 	// Get the last n number of tournaments & scrape 'em
 	count := settings.RecentTournamentCount
 	fmt.Printf("Grabbing last %d tournament Ids\n", count)
-	if ids, err := getLatestTournamentIds(client, count); err == nil {
-		for _, tournyId := range ids {
-			pageNum := 1
-			for {
-				fmt.Printf("Processing Tournament #%d, Page #%d\n", tournyId, pageNum)
-				hasNextPage, err := processTournament(client, tournyId, pageNum)
-				if err != nil {
-					fmt.Printf("Failed to parse tournament page: %v\n", err)
-					break
-				}
-				if !hasNextPage {
-					break
-				}
-				fmt.Println()
-				pageNum++
+	var tourneys []int
+	if *saltTheEarth {
+		tourneys, _ = getAllTournamentIds()
+	} else {
+		tourneys, err = getLatestTournamentIds(client, count)
+		if err != nil {
+			fmt.Printf("Failed to grab tournament IDs: %v\n", err)
+			os.Exit(1)
+		}
+	}
+
+	for _, tournyId := range tourneys {
+		pageNum := 1
+		for {
+			fmt.Printf("Processing Tournament #%d, Page #%d\n", tournyId, pageNum)
+			hasNextPage, err := processTournament(client, tournyId, pageNum)
+			if err != nil {
+				fmt.Printf("Failed to parse tournament page: %v\n", err)
+				break
+			}
+			if !hasNextPage {
+				break
 			}
 			fmt.Println()
+			pageNum++
 		}
-		relayToBot(fmt.Sprintf("Scheduled scrape complete, bot information is up to date."))
-	} else {
-		fmt.Printf("Failed to grab tournament IDs: %v\n", err)
+		fmt.Println()
 	}
+	relayToBot(fmt.Sprintf("Scheduled scrape complete, bot information is up to date."))
 }
 
 // returns an absolute salty url based on a fragment
@@ -158,7 +166,9 @@ func getRoster(c *http.Client) error {
 func getAllTournamentIds() ([]int, error) {
 	return []int{
 		101, 102, 103, 104, 105,
-		106, 107, 108, 109}, nil
+		106, 107, 108, 109, 110,
+		111, 112, 113, 114, 115,
+		116, 117}, nil
 }
 
 // Returns an array of the ids of the last n tournaments.
