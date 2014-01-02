@@ -8,6 +8,7 @@ package main
 
 import (
 	"errors"
+	"flag"
 	"fmt"
 	"github.com/moovweb/gokogiri"
 	ghtml "github.com/moovweb/gokogiri/html"
@@ -38,12 +39,15 @@ type ParsedMatch struct {
 }
 
 var (
-	repo  *spicerack.Repository
-	numRx *regexp.Regexp
+	repo     *spicerack.Repository
+	numRx    *regexp.Regexp
+	resetElo = flag.Bool("reset-elo", false, "Recalcuates elo values")
+	eloBase  = flag.Int("elo-base", 300, "Provides a base elo value")
 )
 
 func main() {
 	// load the config file
+	flag.Parse()
 	conf, err := spicerack.GofigFromEnv("ME_CONF")
 	if err != nil {
 		fmt.Printf("%v\nQuitting.\n", err)
@@ -59,6 +63,11 @@ func main() {
 		os.Exit(1)
 	}
 	defer repo.Close()
+
+	// reset ELO values if options are present
+	if *resetElo {
+		repo.ResetElo(*eloBase)
+	}
 
 	// log into saltybet
 	client, err := spicerack.LogIntoSaltyBet(settings.IllumEmail, settings.IllumPword)
