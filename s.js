@@ -51,7 +51,7 @@ DS.Search = {
     populateData: function($elm, data) {
         data.Wins = data.Wins || [];
         data.Losses = data.Losses || [];
-        var tiers = {1:'S', 2:'A', 3:'B', 4:'P'};
+        var tiers = {0:'NEW', 1:'S', 2:'A', 3:'B', 4:'P'};
 
         $elm.find(".name").val(data.Fighter.Name);
         $elm.find(".elo").text(data.Fighter.Elo);
