@@ -42,6 +42,8 @@ const (
 	UPSET_WINNER_FORMAT  string = "In a %s upset, %s has defeated %s!"
 	VS_FORMAT            string = "%s [%s] \x02vs\x02 %s [%s] | %s"
 	SOLO_FORMAT          string = "%s [%s] | %s"
+	VS_FORMAT_NO_LINK    string = "%s [%s] \x02vs\x02 %s [%s]"
+	SOLO_FORMAT_NO_LINK  string = "%s [%s]"
 	HT_FORMAT            string = "http://fightmoney.herokuapp.com/stats/#/%s/%s"
 	GOOGL_FORMAT         string = "https://www.googleapis.com/urlshortener/v1/url?key=%s"
 	WL_MESSAGE           string = "%s [user: %s | pass: %s]"
@@ -307,15 +309,15 @@ func announceFightCard(data *spicerack.FightCard, opts *Options) {
 			p2f := formatFighterName(blue, data.BlueName, P2_NAME_FORMAT)
 			p1stats := formatFighterStats(red)
 			p2stats := formatFighterStats(blue)
-			ht := getHightowerUrl(data.RedName, data.BlueName)
+			// ht := getHightowerUrl(data.RedName, data.BlueName)
 
 			var card string = ""
 			if len(data.RedName) > 0 && len(data.BlueName) > 0 {
-				card = fmt.Sprintf(VS_FORMAT, p1f, p1stats, p2f, p2stats, ht)
+				card = fmt.Sprintf(VS_FORMAT_NO_LINK, p1f, p1stats, p2f, p2stats /*, ht*/)
 			} else if len(data.RedName) > 0 {
-				card = fmt.Sprintf(SOLO_FORMAT, p1f, p1stats, ht)
+				card = fmt.Sprintf(SOLO_FORMAT_NO_LINK, p1f, p1stats /*, ht*/)
 			} else if len(data.BlueName) > 0 {
-				card = fmt.Sprintf(SOLO_FORMAT, p2f, p2stats, ht)
+				card = fmt.Sprintf(SOLO_FORMAT_NO_LINK, p2f, p2stats /*, ht*/)
 			}
 
 			client.Privmsg(settings.Channel, card)
