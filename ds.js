@@ -62,9 +62,15 @@ DS.Web = {
                 DS.Web.appendRow($t, index, item, common);
             });
         };
+        var revAppendFunc = function(a, $t) {
+            $(a).sort(DS.Web.eloSort).each(function(index, item){
+                DS.Web.appendRow($t, index, item, common);
+            });
+            $a.reverse();
+        };
 
         appendFunc(data.Wins, $tblW);
-        appendFunc(data.Losses, $tblL);
+        revAppendFunc(data.Losses, $tblL);
     },
 
     appendRow: function($tbl, index, item, common) {
